@@ -64,6 +64,8 @@ const (
 	MethodDeleteActor
 	// MethodSend is the identifier for the method that sends a message to another actor.
 	MethodSend
+	// MethodCreateState is the identifier for the method that creates the chaos actor's state.
+	MethodCreateState
 	// MethodMutateState is the identifier for the method that attempts to mutate
 	// a state value in the actor.
 	MethodMutateState
@@ -84,6 +86,7 @@ func (a Actor) Exports() []interface{} {
 		MethodResolveAddress:      a.ResolveAddress,
 		MethodDeleteActor:         a.DeleteActor,
 		MethodSend:                a.Send,
+		MethodCreateState:         a.CreateState,
 		MethodMutateState:         a.MutateState,
 		MethodAbortWith:           a.AbortWith,
 		MethodInspectRuntime:      a.InspectRuntime,
@@ -225,6 +228,14 @@ func (a Actor) DeleteActor(rt runtime2.Runtime, beneficiary *address.Address) *a
 type MutateStateArgs struct {
 	Value  string
 	Branch MutateStateBranch
+}
+
+// CreateState creates the chaos actor's state
+func (a Actor) CreateState(rt runtime2.Runtime, _ *abi.EmptyValue) *abi.EmptyValue {
+	rt.ValidateImmediateCallerAcceptAny()
+	rt.StateCreate(&State{})
+
+	return nil
 }
 
 // MutateState attempts to mutate a state value in the actor.
