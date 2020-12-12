@@ -39,7 +39,7 @@ func (m *Sealing) handlePacking(ctx statemachine.Context, sector SectorInfo) err
 		}
 	}
 	sector.Pieces = ps
-	log.Infof("len pieces is %d", len(sector.Pieces))
+	log.Infof("handlePacking after pledgeSector sector is %+v", sector)
 
 	log.Infow("performing filling up rest of the sector...", "sector", sector.SectorNumber)
 
