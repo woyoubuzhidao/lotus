@@ -25,21 +25,26 @@ var MaxTicketAge = abi.ChainEpoch(builtin0.EpochsInDay * 2)
 
 func (m *Sealing) handlePacking(ctx statemachine.Context, sector SectorInfo) error {
 	log.Infof("handlePacking sector is %+v", sector)
-	ctx1 := context.TODO()
-	pieces, err := m.pledgeSector(ctx1, sector.SectorID, []abi.UnpaddedPieceSize{}, abi.PaddedPieceSize(sector.Size).Unpadded())
-	if err != nil {
-		log.Errorf("%+v", err)
-		return err
-	}
-	ps := make([]Piece, len(pieces))
-	for idx := range ps {
-		ps[idx] = Piece{
-			Piece:    pieces[idx],
-			DealInfo: nil,
-		}
-	}
-	sector.Pieces = ps
-	log.Infof("handlePacking after pledgeSector sector is %+v", sector)
+	//ctx1 := context.TODO()
+	//pieces, err := m.pledgeSector(ctx1, sector.SectorID, []abi.UnpaddedPieceSize{}, abi.PaddedPieceSize(sector.Size).Unpadded())
+	//if err != nil {
+	//	log.Errorf("%+v", err)
+	//	return err
+	//}
+	//ps := make([]Piece, len(pieces))
+	//for idx := range ps {
+	//	ps[idx] = Piece{
+	//		Piece:    pieces[idx],
+	//		DealInfo: nil,
+	//	}
+	//}
+	//if len(sector.Pieces) > 0 {
+	//	sector.Pieces = append(sector.Pieces, ps...)
+	//} else {
+	//	sector.Pieces = ps
+	//}
+
+	//log.Infof("handlePacking after pledgeSector sector is %+v", sector)
 
 	log.Infow("performing filling up rest of the sector...", "sector", sector.SectorNumber)
 
@@ -74,7 +79,7 @@ func (m *Sealing) handlePacking(ctx statemachine.Context, sector SectorInfo) err
 	}
 
 	return ctx.Send(SectorPacked{
-		Pieces:       ps,
+		//Pieces:       sector.Pieces,
 		FillerPieces: fillerPieces,
 	})
 }

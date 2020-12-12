@@ -100,8 +100,8 @@ type SectorPacked struct {
 }
 
 func (evt SectorPacked) apply(state *SectorInfo) {
-	log.Infof("evt SectorPacked is %+v", evt)
-	state.Pieces = evt.Pieces
+	//log.Infof("evt SectorPacked is %+v", evt)
+	//state.Pieces = evt.Pieces
 	for idx := range evt.FillerPieces {
 		state.Pieces = append(state.Pieces, Piece{
 			Piece:    evt.FillerPieces[idx],
