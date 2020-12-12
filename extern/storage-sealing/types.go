@@ -69,6 +69,9 @@ type SectorInfo struct {
 
 	SectorType abi.RegisteredSealProof
 
+	SectorID storage.SectorRef
+	Size     abi.SectorSize
+
 	// Packing
 	Pieces []Piece
 

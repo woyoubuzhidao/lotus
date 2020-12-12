@@ -24,6 +24,21 @@ var DealSectorPriority = 1024
 var MaxTicketAge = abi.ChainEpoch(builtin0.EpochsInDay * 2)
 
 func (m *Sealing) handlePacking(ctx statemachine.Context, sector SectorInfo) error {
+	ctx1 := context.TODO()
+	pieces, err := m.pledgeSector(ctx1, sector.SectorID, []abi.UnpaddedPieceSize{}, abi.PaddedPieceSize(sector.Size).Unpadded())
+	if err != nil {
+		log.Errorf("%+v", err)
+		return err
+	}
+	ps := make([]Piece, len(pieces))
+	for idx := range ps {
+		ps[idx] = Piece{
+			Piece:    pieces[idx],
+			DealInfo: nil,
+		}
+	}
+	sector.Pieces = ps
+
 	log.Infow("performing filling up rest of the sector...", "sector", sector.SectorNumber)
 
 	var allocated abi.UnpaddedPieceSize

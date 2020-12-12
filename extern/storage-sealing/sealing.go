@@ -411,7 +411,7 @@ func (m *Sealing) newDealSector(ctx context.Context) (abi.SectorNumber, abi.Sect
 }
 
 // newSectorCC accepts a slice of pieces with no deal (junk data)
-func (m *Sealing) newSectorCC(ctx context.Context, sid abi.SectorNumber, pieces []Piece) error {
+func (m *Sealing) newSectorCC(ctx context.Context, sid abi.SectorNumber, pieces []Piece, sectorID storage.SectorRef, size abi.SectorSize) error {
 	spt, err := m.currentSealProof(ctx)
 	if err != nil {
 		return xerrors.Errorf("getting current seal proof type: %w", err)
@@ -422,6 +422,8 @@ func (m *Sealing) newSectorCC(ctx context.Context, sid abi.SectorNumber, pieces 
 		ID:         sid,
 		Pieces:     pieces,
 		SectorType: spt,
+		SectorID:   sectorID,
+		Size:       size,
 	})
 }
 

@@ -68,12 +68,16 @@ type SectorStartCC struct {
 	ID         abi.SectorNumber
 	SectorType abi.RegisteredSealProof
 	Pieces     []Piece
+	SectorID   storage.SectorRef
+	Size       abi.SectorSize
 }
 
 func (evt SectorStartCC) apply(state *SectorInfo) {
 	state.SectorNumber = evt.ID
 	state.Pieces = evt.Pieces
 	state.SectorType = evt.SectorType
+	state.SectorID = evt.SectorID
+	state.Size = evt.Size
 }
 
 type SectorAddPiece struct {
