@@ -24,6 +24,7 @@ var DealSectorPriority = 1024
 var MaxTicketAge = abi.ChainEpoch(builtin0.EpochsInDay * 2)
 
 func (m *Sealing) handlePacking(ctx statemachine.Context, sector SectorInfo) error {
+	log.Infof("handlePacking sector is %+v", sector)
 	ctx1 := context.TODO()
 	pieces, err := m.pledgeSector(ctx1, sector.SectorID, []abi.UnpaddedPieceSize{}, abi.PaddedPieceSize(sector.Size).Unpadded())
 	if err != nil {
@@ -38,6 +39,7 @@ func (m *Sealing) handlePacking(ctx statemachine.Context, sector SectorInfo) err
 		}
 	}
 	sector.Pieces = ps
+	log.Infof("len pieces is %d", len(sector.Pieces))
 
 	log.Infow("performing filling up rest of the sector...", "sector", sector.SectorNumber)
 
@@ -105,6 +107,7 @@ func (m *Sealing) getTicket(ctx statemachine.Context, sector SectorInfo) (abi.Se
 }
 
 func (m *Sealing) handleGetTicket(ctx statemachine.Context, sector SectorInfo) error {
+	log.Infof("handleGetTicket sector is %+v", sector)
 	ticketValue, ticketEpoch, err := m.getTicket(ctx, sector)
 	if err != nil {
 		allocated, aerr := m.api.StateMinerSectorAllocated(ctx.Context(), m.maddr, sector.SectorNumber, nil)
@@ -132,6 +135,7 @@ func (m *Sealing) handleGetTicket(ctx statemachine.Context, sector SectorInfo) e
 }
 
 func (m *Sealing) handlePreCommit1(ctx statemachine.Context, sector SectorInfo) error {
+	log.Infof("handlePreCommit1 sector is %+v", sector)
 	if err := checkPieces(ctx.Context(), m.maddr, sector, m.api); err != nil { // Sanity check state
 		switch err.(type) {
 		case *ErrApi:
