@@ -72,20 +72,20 @@ func (m *Sealing) PledgeSector() error {
 			return
 		}
 
-		pieces, err := m.pledgeSector(ctx, sectorID, []abi.UnpaddedPieceSize{}, abi.PaddedPieceSize(size).Unpadded())
-		if err != nil {
-			log.Errorf("%+v", err)
-			return
-		}
+		//pieces, err := m.pledgeSector(ctx, sectorID, []abi.UnpaddedPieceSize{}, abi.PaddedPieceSize(size).Unpadded())
+		//if err != nil {
+		//	log.Errorf("%+v", err)
+		//	return
+		//}
 
-		//ps := make([]Piece, 0)
-		ps := make([]Piece, len(pieces))
-		for idx := range ps {
-			ps[idx] = Piece{
-				Piece:    pieces[idx],
-				DealInfo: nil,
-			}
-		}
+		ps := make([]Piece, 0)
+		//ps := make([]Piece, len(pieces))
+		//for idx := range ps {
+		//	ps[idx] = Piece{
+		//		Piece:    pieces[idx],
+		//		DealInfo: nil,
+		//	}
+		//}
 
 		if err := m.newSectorCC(ctx, sid, ps, sectorID, size); err != nil {
 			log.Errorf("%+v", err)

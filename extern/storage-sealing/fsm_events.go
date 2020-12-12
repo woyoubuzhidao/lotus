@@ -100,14 +100,14 @@ type SectorPacked struct {
 }
 
 func (evt SectorPacked) apply(state *SectorInfo) {
-	//log.Infof("evt SectorPacked is %+v", evt)
-	//state.Pieces = evt.Pieces
+	state.Pieces = evt.Pieces
 	for idx := range evt.FillerPieces {
 		state.Pieces = append(state.Pieces, Piece{
 			Piece:    evt.FillerPieces[idx],
 			DealInfo: nil, // filler pieces don't have deals associated with them
 		})
 	}
+	log.Infof("state SectorPacked is %+v", state)
 }
 
 type SectorTicket struct {
@@ -118,6 +118,7 @@ type SectorTicket struct {
 func (evt SectorTicket) apply(state *SectorInfo) {
 	state.TicketEpoch = evt.TicketEpoch
 	state.TicketValue = evt.TicketValue
+	log.Infof("state SectorTicket is %+v", state)
 }
 
 type SectorOldTicket struct{}
