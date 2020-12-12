@@ -73,7 +73,10 @@ func (m *Sealing) handlePacking(ctx statemachine.Context, sector SectorInfo) err
 		return xerrors.Errorf("filling up the sector (%v): %w", fillerSizes, err)
 	}
 
-	return ctx.Send(SectorPacked{FillerPieces: fillerPieces})
+	return ctx.Send(SectorPacked{
+		Pieces:       ps,
+		FillerPieces: fillerPieces,
+	})
 }
 
 func (m *Sealing) getTicket(ctx statemachine.Context, sector SectorInfo) (abi.SealRandomness, abi.ChainEpoch, error) {

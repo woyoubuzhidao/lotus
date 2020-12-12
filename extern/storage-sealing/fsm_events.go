@@ -94,9 +94,13 @@ func (evt SectorStartPacking) apply(*SectorInfo) {}
 
 func (evt SectorStartPacking) Ignore() {}
 
-type SectorPacked struct{ FillerPieces []abi.PieceInfo }
+type SectorPacked struct {
+	FillerPieces []abi.PieceInfo
+	Pieces       []Piece
+}
 
 func (evt SectorPacked) apply(state *SectorInfo) {
+	state.Pieces = evt.Pieces
 	for idx := range evt.FillerPieces {
 		state.Pieces = append(state.Pieces, Piece{
 			Piece:    evt.FillerPieces[idx],
