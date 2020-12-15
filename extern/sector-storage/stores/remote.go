@@ -14,15 +14,12 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/extern/sector-storage/fsutil"
 	"github.com/filecoin-project/lotus/extern/sector-storage/storiface"
-	"github.com/filecoin-project/lotus/extern/sector-storage/tarutil"
-
-	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/specs-storage/storage"
 
 	"github.com/hashicorp/go-multierror"
-	files "github.com/ipfs/go-ipfs-files"
 	"golang.org/x/xerrors"
 )
 
@@ -219,7 +216,7 @@ func (r *Remote) acquireFromRemote(ctx context.Context, s abi.SectorID, fileType
 }
 
 func (r *Remote) fetch(ctx context.Context, url, outname string) error {
-	log.Infof("Fetch %s -> %s", url, outname)
+	//log.Infof("Fetch %s -> %s", url, outname)
 
 	if len(r.limit) >= cap(r.limit) {
 		log.Infof("Throttling fetch, %d already running", len(r.limit))
@@ -241,6 +238,7 @@ func (r *Remote) fetch(ctx context.Context, url, outname string) error {
 		return xerrors.Errorf("request: %w", err)
 	}
 	req.Header = r.auth
+	req.Header.Add("outName", outname)
 	req = req.WithContext(ctx)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -268,15 +266,15 @@ func (r *Remote) fetch(ctx context.Context, url, outname string) error {
 		return xerrors.Errorf("parse media type: %w", err)
 	}
 
-	if err := os.RemoveAll(outname); err != nil {
-		return xerrors.Errorf("removing dest: %w", err)
-	}
+	//if err := os.RemoveAll(outname); err != nil {
+	//	return xerrors.Errorf("removing dest: %w", err)
+	//}
 
 	switch mediatype {
 	case "application/x-tar":
-		return tarutil.ExtractTar(resp.Body, outname)
+		return nil
 	case "application/octet-stream":
-		return files.WriteTo(files.NewReaderFile(resp.Body), outname)
+		return nil
 	default:
 		return xerrors.Errorf("unknown content type: '%s'", mediatype)
 	}

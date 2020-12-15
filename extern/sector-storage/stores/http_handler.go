@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 
+	files "github.com/ipfs/go-ipfs-files"
+
 	"github.com/gorilla/mux"
 	logging "github.com/ipfs/go-log/v2"
 	"golang.org/x/xerrors"
@@ -57,6 +59,8 @@ func (handler *FetchHandler) remoteStatFs(w http.ResponseWriter, r *http.Request
 func (handler *FetchHandler) remoteGetSector(w http.ResponseWriter, r *http.Request) {
 	log.Infof("SERVE GET %s", r.URL)
 	vars := mux.Vars(r)
+	outName := r.Header.Get("outName")
+	log.Infof("outName is %s", outName)
 
 	id, err := storiface.ParseSectorID(vars["id"])
 	if err != nil {
@@ -102,13 +106,19 @@ func (handler *FetchHandler) remoteGetSector(w http.ResponseWriter, r *http.Requ
 		w.WriteHeader(500)
 		return
 	}
-
+	if err := os.RemoveAll(outName); err != nil {
+		log.Errorf("removing dest: %w", err)
+		w.WriteHeader(500)
+		return
+	}
 	var rd io.Reader
 	if stat.IsDir() {
 		rd, err = tarutil.TarDirectory(path)
+		err = tarutil.ExtractTar(rd, outName)
 		w.Header().Set("Content-Type", "application/x-tar")
 	} else {
 		rd, err = os.OpenFile(path, os.O_RDONLY, 0644) // nolint
+		err = files.WriteTo(files.NewReaderFile(rd), outName)
 		w.Header().Set("Content-Type", "application/octet-stream")
 	}
 	if err != nil {
@@ -116,12 +126,13 @@ func (handler *FetchHandler) remoteGetSector(w http.ResponseWriter, r *http.Requ
 		w.WriteHeader(500)
 		return
 	}
+	log.Infof("upload file success")
 
 	w.WriteHeader(200)
-	if _, err := io.Copy(w, rd); err != nil { // TODO: default 32k buf may be too small
-		log.Errorf("%+v", err)
-		return
-	}
+	//if _, err := io.Copy(w, rd); err != nil { // TODO: default 32k buf may be too small
+	//	log.Errorf("%+v", err)
+	//	return
+	//}
 }
 
 func (handler *FetchHandler) remoteDeleteSector(w http.ResponseWriter, r *http.Request) {
