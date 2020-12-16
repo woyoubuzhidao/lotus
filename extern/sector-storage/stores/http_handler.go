@@ -126,7 +126,7 @@ func (handler *FetchHandler) remoteGetSector(w http.ResponseWriter, r *http.Requ
 		w.WriteHeader(500)
 		return
 	}
-	log.Infof("upload file success")
+	log.Info("upload file success")
 
 	w.WriteHeader(200)
 	//if _, err := io.Copy(w, rd); err != nil { // TODO: default 32k buf may be too small
