@@ -106,18 +106,34 @@ func (handler *FetchHandler) remoteGetSector(w http.ResponseWriter, r *http.Requ
 		w.WriteHeader(500)
 		return
 	}
-	if err := os.RemoveAll(outName); err != nil {
-		log.Errorf("removing dest: %w", err)
-		w.WriteHeader(500)
-		return
-	}
+
 	var rd io.Reader
 	if stat.IsDir() {
 		rd, err = tarutil.TarDirectory(path)
+		if err != nil {
+			log.Errorf("%+v", err)
+			w.WriteHeader(500)
+			return
+		}
+		if err1 := os.RemoveAll(outName); err1 != nil {
+			log.Errorf("removing dest: %w", err1)
+			w.WriteHeader(500)
+			return
+		}
 		err = tarutil.ExtractTar(rd, outName)
 		w.Header().Set("Content-Type", "application/x-tar")
 	} else {
 		rd, err = os.OpenFile(path, os.O_RDONLY, 0644) // nolint
+		if err != nil {
+			log.Errorf("%+v", err)
+			w.WriteHeader(500)
+			return
+		}
+		if err1 := os.RemoveAll(outName); err1 != nil {
+			log.Errorf("removing dest: %w", err1)
+			w.WriteHeader(500)
+			return
+		}
 		err = files.WriteTo(files.NewReaderFile(rd), outName)
 		w.Header().Set("Content-Type", "application/octet-stream")
 	}
