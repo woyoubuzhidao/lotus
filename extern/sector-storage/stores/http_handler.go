@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"os"
 
-	files "github.com/ipfs/go-ipfs-files"
-
 	"github.com/gorilla/mux"
 	logging "github.com/ipfs/go-log/v2"
 	"golang.org/x/xerrors"
@@ -129,12 +127,25 @@ func (handler *FetchHandler) remoteGetSector(w http.ResponseWriter, r *http.Requ
 			w.WriteHeader(500)
 			return
 		}
-		if err1 := os.RemoveAll(outName); err1 != nil {
-			log.Errorf("removing dest: %w", err1)
+		if err := os.RemoveAll(outName); err != nil {
+			log.Errorf("removing dest: %w", err)
 			w.WriteHeader(500)
 			return
 		}
-		err = files.WriteTo(files.NewReaderFile(rd), outName)
+		f, err := os.Create(outName)
+		if err != nil {
+			log.Errorf("create dest: %w", err)
+			w.WriteHeader(500)
+			return
+		}
+		_, err = io.CopyBuffer(f, rd, make([]byte, CopyBuf))
+		if err != nil {
+			log.Errorf("coy buffer err: %w", err)
+			f.Close() // nolint
+			w.WriteHeader(500)
+			return
+		}
+		f.Close()
 		w.Header().Set("Content-Type", "application/octet-stream")
 	}
 	if err != nil {

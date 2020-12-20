@@ -25,6 +25,8 @@ import (
 
 var FetchTempSubdir = "fetching"
 
+var CopyBuf = 1 << 20
+
 type Remote struct {
 	local *Local
 	index SectorIndex
