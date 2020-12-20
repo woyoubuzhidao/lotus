@@ -134,7 +134,7 @@ func (handler *FetchHandler) remoteGetSector(w http.ResponseWriter, r *http.Requ
 		}
 		f, err := os.Create(outName)
 		if err != nil {
-			log.Errorf("create dest: %w", err)
+			log.Errorf("create dest: %v", err)
 			w.WriteHeader(500)
 			return
 		}
